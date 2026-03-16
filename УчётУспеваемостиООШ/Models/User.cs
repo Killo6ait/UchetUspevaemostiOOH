@@ -19,7 +19,7 @@ namespace УчётУспеваемостиООШ.Models
 
         [Required]
         [MaxLength(20)]
-        public string Role { get; set; } = string.Empty; // "Администратор", "Учитель", "Завуч"
+        public string Role { get; set; } = string.Empty; 
 
         public int? TeacherID { get; set; }
     }

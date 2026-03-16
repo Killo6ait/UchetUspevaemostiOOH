@@ -17,9 +17,8 @@ namespace УчётУспеваемостиООШ.Models
         public int SubjectID { get; set; }
 
         [Required]
-        [Column("Grade")] // Явно указываем имя колонки в БД
-        public byte GradeValue { get; set; } // Переименовано, чтобы не совпадало с именем класса
-
+        [Column("Grade")] 
+        public byte GradeValue { get; set; } 
         [Required]
         [Column(TypeName = "date")]
         public DateTime Date { get; set; }
@@ -28,7 +27,7 @@ namespace УчётУспеваемостиООШ.Models
         [MaxLength(50)]
         public string ControlType { get; set; } = string.Empty;
 
-        // Навигационные свойства
+
         [ForeignKey("StudentID")]
         public virtual Student? Student { get; set; }
 

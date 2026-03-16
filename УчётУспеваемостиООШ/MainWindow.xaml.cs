@@ -30,7 +30,7 @@ namespace УчётУспеваемостиООШ
             {
                 using (var context = new SchoolContext())
                 {
-                    // Ищем пользователя в БД
+
                     var user = context.Users
                         .FirstOrDefault(u => u.Username == username && u.Password == password);
 

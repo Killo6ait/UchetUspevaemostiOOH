@@ -20,7 +20,7 @@ namespace УчётУспеваемостиООШ
             LoadData();
         }
 
-        // Класс для отображения в DataGrid
+
         public class AttendanceViewModel
         {
             public int AttendanceID { get; set; }
@@ -31,7 +31,7 @@ namespace УчётУспеваемостиООШ
             public string Status { get; set; } = string.Empty;
         }
 
-        // Класс для отображения учеников в ComboBox
+
         public class StudentViewModel
         {
             public int StudentID { get; set; }
@@ -43,7 +43,7 @@ namespace УчётУспеваемостиООШ
         {
             try
             {
-                // Загрузка записей посещаемости
+
                 _attendances = _context.Attendances
                     .Include(a => a.Student)
                         .ThenInclude(s => s != null ? s.Class : null)
@@ -66,7 +66,6 @@ namespace УчётУспеваемостиООШ
 
                 dgAttendance.ItemsSource = _attendances;
 
-                // Загрузка учеников для ComboBox
                 var students = _context.Students
                     .Include(s => s.Class)
                     .Select(s => new StudentViewModel
@@ -82,13 +81,13 @@ namespace УчётУспеваемостиООШ
                 cmbStudent.DisplayMemberPath = "FullName";
                 cmbStudent.SelectedValuePath = "StudentID";
 
-                // Установка даты по умолчанию
+
                 dpDate.SelectedDate = DateTime.Today;
 
-                // Выбор статуса по умолчанию
+
                 if (cmbStatus.Items.Count > 0)
                 {
-                    cmbStatus.SelectedIndex = 0; // "Присутствовал"
+                    cmbStatus.SelectedIndex = 0; 
                 }
             }
             catch (Exception ex)
@@ -102,16 +101,14 @@ namespace УчётУспеваемостиООШ
         {
             if (dgAttendance.SelectedItem is AttendanceViewModel selectedAttendance)
             {
-                // Заполняем поля данными выбранной записи
+          
                 txtAttendanceID.Text = selectedAttendance.AttendanceID.ToString();
 
-                // Выбираем ученика в ComboBox
                 cmbStudent.SelectedValue = selectedAttendance.StudentID;
 
-                // Устанавливаем дату
+         
                 dpDate.SelectedDate = selectedAttendance.AttendanceDate;
 
-                // Выбираем статус
                 foreach (ComboBoxItem item in cmbStatus.Items)
                 {
                     if (item.Content.ToString() == selectedAttendance.Status)
@@ -127,7 +124,7 @@ namespace УчётУспеваемостиООШ
         {
             try
             {
-                // Проверка заполнения полей
+      
                 if (cmbStudent.SelectedValue == null)
                 {
                     MessageBox.Show("Выберите ученика!", "Предупреждение",
@@ -149,7 +146,7 @@ namespace УчётУспеваемостиООШ
                     return;
                 }
 
-                // Проверка на дубликат (нельзя создать две записи для одного ученика на одну дату)
+          
                 var existingAttendance = _context.Attendances
                     .FirstOrDefault(a => a.StudentID == (int)cmbStudent.SelectedValue &&
                                          a.Date == dpDate.SelectedDate.Value);
@@ -161,7 +158,7 @@ namespace УчётУспеваемостиООШ
                     return;
                 }
 
-                // Создание новой записи посещаемости
+  
                 var newAttendance = new Attendance
                 {
                     StudentID = (int)cmbStudent.SelectedValue,
@@ -175,7 +172,7 @@ namespace УчётУспеваемостиООШ
                 MessageBox.Show("Запись посещаемости успешно добавлена!", "Успех",
                     MessageBoxButton.OK, MessageBoxImage.Information);
 
-                // Обновляем данные
+
                 LoadData();
                 btnClear_Click(sender, e);
             }
@@ -207,7 +204,7 @@ namespace УчётУспеваемостиООШ
                     return;
                 }
 
-                // Проверка заполнения полей
+
                 if (cmbStudent.SelectedValue == null)
                 {
                     MessageBox.Show("Выберите ученика!", "Предупреждение",
@@ -229,7 +226,7 @@ namespace УчётУспеваемостиООШ
                     return;
                 }
 
-                // Проверка на дубликат (исключая текущую запись)
+    
                 var existingAttendance = _context.Attendances
                     .FirstOrDefault(a => a.StudentID == (int)cmbStudent.SelectedValue &&
                                          a.Date == dpDate.SelectedDate.Value &&
@@ -242,7 +239,7 @@ namespace УчётУспеваемостиООШ
                     return;
                 }
 
-                // Обновление данных
+
                 attendance.StudentID = (int)cmbStudent.SelectedValue;
                 attendance.Date = dpDate.SelectedDate.Value;
                 attendance.Status = ((ComboBoxItem)cmbStatus.SelectedItem).Content.ToString()!;
@@ -252,7 +249,6 @@ namespace УчётУспеваемостиООШ
                 MessageBox.Show("Запись посещаемости успешно обновлена!", "Успех",
                     MessageBoxButton.OK, MessageBoxImage.Information);
 
-                // Обновляем данные
                 LoadData();
                 btnClear_Click(sender, e);
             }
@@ -290,7 +286,7 @@ namespace УчётУспеваемостиООШ
                         MessageBox.Show("Запись посещаемости успешно удалена!", "Успех",
                             MessageBoxButton.OK, MessageBoxImage.Information);
 
-                        // Обновляем данные
+   
                         LoadData();
                         btnClear_Click(sender, e);
                     }
@@ -305,13 +301,13 @@ namespace УчётУспеваемостиООШ
 
         private void btnClear_Click(object sender, RoutedEventArgs e)
         {
-            // Очистка всех полей
+    
             txtAttendanceID.Text = "";
             cmbStudent.SelectedIndex = -1;
             dpDate.SelectedDate = DateTime.Today;
-            cmbStatus.SelectedIndex = 0; // Сброс на "Присутствовал"
+            cmbStatus.SelectedIndex = 0; 
 
-            // Снимаем выделение в DataGrid
+   
             dgAttendance.SelectedItem = null;
         }
 

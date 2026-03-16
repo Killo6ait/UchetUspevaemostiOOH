@@ -11,7 +11,7 @@
         Background="#f5f6fa">
 
     <Window.Resources>
-        <!-- Эффект тени для кнопок -->
+
         <DropShadowEffect x:Key="ButtonShadow" 
                           Color="Black" 
                           Direction="315" 
@@ -19,7 +19,7 @@
                           Opacity="0.3" 
                           BlurRadius="10"/>
 
-        <!-- Стиль для кнопок -->
+
         <Style x:Key="ActionButtonStyle" TargetType="Button">
             <Setter Property="Width" Value="120"/>
             <Setter Property="Height" Value="40"/>
@@ -36,7 +36,7 @@
             </Style.Resources>
         </Style>
 
-        <!-- Стиль для текстовых полей (заголовки) -->
+
         <Style x:Key="FormFieldStyle" TargetType="TextBlock">
             <Setter Property="FontSize" Value="14"/>
             <Setter Property="FontWeight" Value="SemiBold"/>
@@ -44,14 +44,14 @@
             <Setter Property="Margin" Value="0,10,0,5"/>
         </Style>
 
-        <!-- Стиль для ComboBox -->
+      
         <Style x:Key="ComboBoxStyle" TargetType="ComboBox">
             <Setter Property="Height" Value="35"/>
             <Setter Property="FontSize" Value="14"/>
             <Setter Property="Margin" Value="0,0,0,10"/>
         </Style>
 
-        <!-- Стиль для TextBox -->
+   
         <Style x:Key="TextBoxStyle" TargetType="TextBox">
             <Setter Property="Height" Value="35"/>
             <Setter Property="FontSize" Value="14"/>
@@ -59,7 +59,7 @@
             <Setter Property="VerticalContentAlignment" Value="Center"/>
         </Style>
 
-        <!-- Стиль для DatePicker -->
+   
         <Style x:Key="DatePickerStyle" TargetType="DatePicker">
             <Setter Property="Height" Value="35"/>
             <Setter Property="FontSize" Value="14"/>
@@ -73,7 +73,7 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-        <!-- Заголовок -->
+       
         <Border Grid.Row="0" 
                 Background="#2c3e50" 
                 Padding="15" 
@@ -86,7 +86,7 @@
                        HorizontalAlignment="Center"/>
         </Border>
 
-        <!-- Основная область -->
+     
         <Grid Grid.Row="1">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"/>
@@ -94,7 +94,7 @@
                 <ColumnDefinition Width="400"/>
             </Grid.ColumnDefinitions>
 
-            <!-- DataGrid с записями посещаемости -->
+        
             <Border Grid.Column="0" 
                     Background="White" 
                     CornerRadius="10" 
@@ -118,28 +118,28 @@
                           ScrollViewer.HorizontalScrollBarVisibility="Auto">
 
                     <DataGrid.Columns>
-                        <!-- ID (скрытая колонка) -->
+                       
                         <DataGridTextColumn Header="ID" 
                                             Binding="{Binding AttendanceID}" 
                                             Width="50"
                                             Visibility="Collapsed"/>
 
-                        <!-- Ученик -->
+            
                         <DataGridTextColumn Header="Ученик" 
                                             Binding="{Binding StudentFullName}" 
                                             Width="220"/>
 
-                        <!-- Класс -->
+                      
                         <DataGridTextColumn Header="Класс" 
                                             Binding="{Binding ClassName}" 
                                             Width="80"/>
 
-                        <!-- Дата -->
+                 
                         <DataGridTextColumn Header="Дата" 
                                             Binding="{Binding AttendanceDate, StringFormat='dd.MM.yyyy'}" 
                                             Width="110"/>
 
-                        <!-- Статус -->
+                
                         <DataGridTextColumn Header="Статус" 
                                             Binding="{Binding Status}" 
                                             Width="150">
@@ -155,14 +155,14 @@
                 </DataGrid>
             </Border>
 
-            <!-- Разделитель -->
+     
             <GridSplitter Grid.Column="1" 
                           Width="5" 
                           HorizontalAlignment="Center" 
                           VerticalAlignment="Stretch"
                           Background="Transparent"/>
 
-            <!-- Панель ввода данных -->
+
             <ScrollViewer Grid.Column="2" 
                           VerticalScrollBarVisibility="Auto" 
                           HorizontalScrollBarVisibility="Disabled">
@@ -183,7 +183,6 @@
                             <RowDefinition Height="Auto"/>
                         </Grid.RowDefinitions>
 
-                        <!-- Заголовок формы -->
                         <TextBlock Grid.Row="0" 
                                    Text="Данные посещаемости" 
                                    FontSize="18" 
@@ -192,7 +191,7 @@
                                    HorizontalAlignment="Center"
                                    Margin="0,0,0,15"/>
 
-                        <!-- ID (скрытое поле) -->
+            
                         <TextBlock Grid.Row="1" Style="{StaticResource FormFieldStyle}" Text="ID:"/>
                         <TextBox x:Name="txtAttendanceID" 
                                  Grid.Row="2" 
@@ -200,7 +199,6 @@
                                  IsReadOnly="True"
                                  Background="#ecf0f1"/>
 
-                        <!-- Ученик (ComboBox) -->
                         <TextBlock Grid.Row="3" Style="{StaticResource FormFieldStyle}" Text="Ученик:"/>
                         <ComboBox x:Name="cmbStudent" 
                                   Grid.Row="4" 
@@ -208,13 +206,13 @@
                                   DisplayMemberPath="FullName"
                                   SelectedValuePath="StudentID"/>
 
-                        <!-- Дата (DatePicker) -->
+              
                         <TextBlock Grid.Row="5" Style="{StaticResource FormFieldStyle}" Text="Дата:"/>
                         <DatePicker x:Name="dpDate" 
                                     Grid.Row="6" 
                                     Style="{StaticResource DatePickerStyle}"/>
 
-                        <!-- Статус (ComboBox) -->
+
                         <TextBlock Grid.Row="7" Style="{StaticResource FormFieldStyle}" Text="Статус:"/>
                         <ComboBox x:Name="cmbStatus" 
                                   Grid.Row="8" 
@@ -224,7 +222,6 @@
                             <ComboBoxItem Content="Уважительная причина" Foreground="#f39c12" FontWeight="Bold"/>
                         </ComboBox>
 
-                        <!-- Кнопки действий -->
                         <WrapPanel Grid.Row="7" 
                                    Orientation="Horizontal" 
                                    HorizontalAlignment="Center"

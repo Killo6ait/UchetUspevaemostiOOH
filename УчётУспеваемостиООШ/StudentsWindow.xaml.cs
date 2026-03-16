@@ -382,5 +382,84 @@ namespace УчётУспеваемостиООШ
             base.OnClosed(e);
             _context?.Dispose();
         }
+        private void btnSearch_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                var searchWindow = new SearchWindow();
+                searchWindow.Owner = this;
+
+                if (searchWindow.ShowDialog() == true)
+                {
+                    var criteria = searchWindow.Criteria;
+                    ApplyFilter(criteria);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Ошибка при открытии окна поиска: {ex.Message}",
+                    "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        private void ApplyFilter(SearchCriteria criteria)
+        {
+            try
+            {
+                var query = _context.Students
+                    .Include(s => s.Class)
+                    .AsQueryable();
+
+                if (!string.IsNullOrEmpty(criteria.LastName))
+                    query = query.Where(s => s.LastName.Contains(criteria.LastName));
+
+                if (!string.IsNullOrEmpty(criteria.FirstName))
+                    query = query.Where(s => s.FirstName.Contains(criteria.FirstName));
+
+                if (!string.IsNullOrEmpty(criteria.ClassName))
+                    query = query.Where(s => s.Class.ClassName == criteria.ClassName);
+
+                var filteredStudents = query
+                    .Select(s => new StudentViewModel
+                    {
+                        StudentID = s.StudentID,
+                        LastName = s.LastName,
+                        FirstName = s.FirstName,
+                        MiddleName = s.MiddleName,
+                        ClassName = s.Class != null ? s.Class.ClassName : "",
+                        BirthDate = s.BirthDate,
+                        ParentAddress = s.ParentAddress
+                    })
+                    .OrderBy(s => s.LastName)
+                    .ThenBy(s => s.FirstName)
+                    .ToList();
+
+                dgStudents.ItemsSource = filteredStudents;
+
+                if (!filteredStudents.Any())
+                {
+                    MessageBox.Show("По заданным критериям ничего не найдено.",
+                        "Результаты поиска", MessageBoxButton.OK, MessageBoxImage.Information);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Ошибка при фильтрации данных: {ex.Message}",
+                    "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        private void btnResetFilter_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                LoadData();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Ошибка при сбросе фильтра: {ex.Message}",
+                    "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
     }
 }

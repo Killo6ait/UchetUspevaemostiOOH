@@ -23,7 +23,7 @@ namespace УчётУспеваемостиООШ
 
         private void InitializeResources()
         {
-            // Создаем эффект тени для кнопок
+
             var buttonShadow = new System.Windows.Media.Effects.DropShadowEffect
             {
                 Color = Colors.Black,
@@ -33,7 +33,6 @@ namespace УчётУспеваемостиООШ
                 BlurRadius = 10
             };
 
-            // Добавляем ресурс в словарь ресурсов окна
             this.Resources["ButtonShadow"] = buttonShadow;
         }
 
@@ -45,24 +44,18 @@ namespace УчётУспеваемостиООШ
 
         private void ApplyRoleBasedAccess()
         {
-            // Настройка доступности кнопок в зависимости от роли
+      
             switch (_currentUser.Role)
             {
                 case "Директор":
-                    // Полный доступ ко всем разделам
+
                     break;
 
                 case "Завуч":
-                    // Завуч имеет доступ ко всем разделам
                     break;
 
                 case "Учитель":
-                    // Учитель видит все кнопки, но с ограниченным функционалом внутри форм
-                    // Все кнопки остаются доступными, ограничения будут внутри форм
-                    //btnStudents.ToolTip = "Просмотр учащихся (только чтение)";
-                    //btnSubjects.ToolTip = "Просмотр предметов (только чтение)";
-                    //btnGrades.ToolTip = "Просмотр и управление оценками (только свои предметы)";
-                    //btnAttendance.ToolTip = "Просмотр и управление посещаемостью (только свой класс)";
+                   
                     break;
             }
         }
@@ -74,7 +67,7 @@ namespace УчётУспеваемостиООШ
                 AnimateButton(button);
             }
 
-            // Передаем текущего пользователя в окно StudentsWindow
+ 
             StudentsWindow studentsWindow = new StudentsWindow(_currentUser);
             studentsWindow.Owner = this;
             studentsWindow.Show();
@@ -87,7 +80,7 @@ namespace УчётУспеваемостиООШ
                 AnimateButton(button);
             }
 
-            // Передаем текущего пользователя в окно SubjectsWindow
+      
             SubjectsWindow subjectsWindow = new SubjectsWindow(_currentUser);
             subjectsWindow.Owner = this;
             subjectsWindow.Show();
@@ -100,7 +93,6 @@ namespace УчётУспеваемостиООШ
                 AnimateButton(button);
             }
 
-            // Передаем текущего пользователя в окно GradesWindow
             GradesWindow grades = new GradesWindow(_currentUser);
             grades.Owner = this;
             grades.Show();
@@ -113,7 +105,7 @@ namespace УчётУспеваемостиООШ
                 AnimateButton(button);
             }
 
-            // Передаем текущего пользователя в окно AttendanceWindow
+
             AttendanceWindow attendanceWindow = new AttendanceWindow();
             attendanceWindow.Owner = this;
             attendanceWindow.Show();
@@ -128,11 +120,11 @@ namespace УчётУспеваемостиООШ
 
             if (result == MessageBoxResult.Yes)
             {
-                // Открываем окно авторизации
+
                 LoginWindow loginWindow = new LoginWindow();
                 loginWindow.Show();
 
-                // Закрываем текущее окно меню
+
                 this.Close();
             }
         }
@@ -160,7 +152,7 @@ namespace УчётУспеваемостиООШ
         protected override void OnClosed(EventArgs e)
         {
             base.OnClosed(e);
-            // Завершаем приложение при закрытии главного окна
+     
             Application.Current.Shutdown();
         }
     }

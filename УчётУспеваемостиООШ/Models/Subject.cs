@@ -20,7 +20,7 @@ namespace УчётУспеваемостиООШ.Models
         [Required]
         public byte HoursPerWeek { get; set; }
 
-        // Навигационные свойства
+
         [ForeignKey("TeacherID")]
         public virtual Teacher? Teacher { get; set; }
 

@@ -12,7 +12,7 @@
         Background="#f5f6fa">
 
     <Window.Resources>
-        <!-- Эффект тени для кнопок - определен здесь -->
+
         <DropShadowEffect x:Key="ButtonShadow" 
                           Color="Black" 
                           Direction="315" 
@@ -20,7 +20,7 @@
                           Opacity="0.3" 
                           BlurRadius="10"/>
 
-        <!-- Стиль для кнопок меню (без конвертера) -->
+
         <Style x:Key="MenuButtonStyle" TargetType="Button">
             <Setter Property="Width" Value="220"/>
             <Setter Property="Height" Value="220"/>
@@ -46,7 +46,6 @@
                                     <RowDefinition Height="*"/>
                                 </Grid.RowDefinitions>
 
-                                <!-- Иконка -->
                                 <TextBlock x:Name="icon" 
                                            Grid.Row="0"
                                            FontFamily="Segoe MDL2 Assets"
@@ -55,7 +54,6 @@
                                            HorizontalAlignment="Center"
                                            Margin="0,20,0,10"/>
 
-                                <!-- Текст кнопки -->
                                 <TextBlock x:Name="text" 
                                            Grid.Row="1"
                                            Text="{TemplateBinding Content}"
@@ -69,9 +67,9 @@
                         </Border>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsMouseOver" Value="True">
-                                <!-- Простое осветление фона без конвертера -->
+                             
                                 <Setter TargetName="border" Property="Background" Value="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=Background}"/>
-                                <!-- Добавляем наложение полупрозрачного белого для эффекта осветления -->
+                          
                                 <Setter TargetName="border" Property="Opacity" Value="0.9"/>
                                 <Setter TargetName="border" Property="RenderTransform">
                                     <Setter.Value>
@@ -101,7 +99,7 @@
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
-        <!-- Верхняя панель с информацией о пользователе -->
+
         <Border Grid.Row="0" 
                 Background="#2c3e50" 
                 Padding="20" 
@@ -113,7 +111,6 @@
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
 
-                <!-- Заголовок -->
                 <StackPanel Grid.Column="0" Orientation="Horizontal">
                     <TextBlock Text="🏫" FontSize="32" Margin="0,0,15,0"/>
                     <StackPanel>
@@ -128,7 +125,7 @@
                     </StackPanel>
                 </StackPanel>
 
-                <!-- Кнопка выхода -->
+
                 <Button x:Name="btnLogout" 
                         Grid.Column="1"
                         Content="Выход" 
@@ -150,7 +147,7 @@
             </Grid>
         </Border>
 
-        <!-- Основное меню с кнопками таблиц -->
+
         <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
             <Grid Margin="30,0,30,0">
                 <Grid.RowDefinitions>
@@ -159,7 +156,7 @@
                     <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
 
-                <!-- Заголовок раздела -->
+
                 <TextBlock Grid.Row="0" 
                            Text="Выберите раздел для работы" 
                            FontSize="28" 
@@ -168,7 +165,6 @@
                            HorizontalAlignment="Center"
                            Margin="0,0,0,30"/>
 
-                <!-- Сетка с кнопками 2x2 -->
                 <Grid Grid.Row="1" HorizontalAlignment="Center">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
@@ -179,7 +175,7 @@
                         <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
 
-                    <!-- Кнопка Учащиеся (синяя) -->
+         
                     <Button Grid.Row="0" 
                             Grid.Column="0"
                             Style="{StaticResource MenuButtonStyle}"
@@ -189,9 +185,9 @@
                             x:Name="btnStudents"
                             Click="btnStudents_Click"/>
 
-                    <!-- Кнопка Учителя (зеленая) -->
+          
 
-                    <!-- Кнопка Предметы (оранжевая) -->
+             
                     <Button Grid.Row="1" 
                             Grid.Column="0"
                             Style="{StaticResource MenuButtonStyle}"
@@ -201,7 +197,7 @@
                             x:Name="btnSubjects"
                             Click="btnSubjects_Click"/>
 
-                    <!-- Кнопка Оценки (красная) -->
+    
                     <Button Grid.Row="1" 
                             Grid.Column="1"
                             Style="{StaticResource MenuButtonStyle}"
@@ -221,14 +217,13 @@
                          Click="btnAttendance_Click" Margin="15,15,15,15"/>
                 </Grid>
 
-                <!-- Дополнительная строка с кнопками -->
                 <Grid Grid.Row="2" HorizontalAlignment="Center" Margin="0,30,0,0">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto"/>
                         <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
 
-                    <!-- Кнопка Посещаемость (фиолетовая) -->
+
 
 
 
@@ -236,7 +231,6 @@
             </Grid>
         </ScrollViewer>
 
-        <!-- Нижняя панель -->
         <Border Grid.Row="2" 
                 Background="#ecf0f1" 
                 Padding="20" 

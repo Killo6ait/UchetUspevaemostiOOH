@@ -1,11 +1,13 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Win32;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
-using Microsoft.EntityFrameworkCore;
 using УчётУспеваемостиООШ.Data;
 using УчётУспеваемостиООШ.Models;
+using УчётУспеваемостиООШ.Services;
 
 namespace УчётУспеваемостиООШ
 {
@@ -26,18 +28,13 @@ namespace УчётУспеваемостиООШ
         {
             if (_currentUser.Role == "Учитель")
             {
-                // Учитель может добавлять, редактировать и удалять оценки, 
-                // но только по своим предметам (фильтрация будет в LoadData)
-                // Оставляем кнопки активными, но добавим проверки в методы
-
-                // Можно добавить подсказку
+              
                 btnAdd.ToolTip = "Добавление оценки (только по вашим предметам)";
                 btnUpdate.ToolTip = "Редактирование оценки (только по вашим предметам)";
                 btnDelete.ToolTip = "Удаление оценки (только по вашим предметам)";
             }
         }
 
-        // Класс для отображения в DataGrid
         public class GradeViewModel
         {
             public int GradeID { get; set; }
@@ -51,7 +48,7 @@ namespace УчётУспеваемостиООШ
             public string ControlType { get; set; } = string.Empty;
         }
 
-        // Класс для отображения учеников в ComboBox
+
         public class StudentViewModel
         {
             public int StudentID { get; set; }
@@ -59,7 +56,6 @@ namespace УчётУспеваемостиООШ
             public string ClassName { get; set; } = string.Empty;
         }
 
-        // Класс для отображения предметов в ComboBox
         public class SubjectViewModel
         {
             public int SubjectID { get; set; }
@@ -75,7 +71,6 @@ namespace УчётУспеваемостиООШ
                         .ThenInclude(s => s != null ? s.Class : null)
                     .Include(g => g.Subject);
 
-                // Если учитель - фильтруем оценки по его предметам
                 if (_currentUser.Role == "Учитель" && _currentUser.TeacherID != null)
                 {
                     var teacherSubjects = _context.Subjects
@@ -86,7 +81,7 @@ namespace УчётУспеваемостиООШ
                     query = query.Where(g => teacherSubjects.Contains(g.SubjectID));
                 }
 
-                // Загрузка оценок
+  
                 _grades = query
                     .Select(g => new GradeViewModel
                     {
@@ -109,7 +104,7 @@ namespace УчётУспеваемостиООШ
 
                 dgGrades.ItemsSource = _grades;
 
-                // Загрузка учеников для ComboBox
+
                 var students = _context.Students
                     .Include(s => s.Class)
                     .Select(s => new StudentViewModel
@@ -125,7 +120,6 @@ namespace УчётУспеваемостиООШ
                 cmbStudent.DisplayMemberPath = "FullName";
                 cmbStudent.SelectedValuePath = "StudentID";
 
-                // Загрузка предметов для ComboBox (с фильтром для учителя)
                 IQueryable<Subject> subjectQuery = _context.Subjects;
 
                 if (_currentUser.Role == "Учитель" && _currentUser.TeacherID != null)
@@ -147,6 +141,7 @@ namespace УчётУспеваемостиООШ
                 cmbSubject.SelectedValuePath = "SubjectID";
 
                 dpDate.SelectedDate = DateTime.Today;
+                LoadClasses();
             }
             catch (Exception ex)
             {
@@ -159,16 +154,16 @@ namespace УчётУспеваемостиООШ
         {
             if (dgGrades.SelectedItem is GradeViewModel selectedGrade)
             {
-                // Заполняем поля данными выбранной записи
+ 
                 txtGradeID.Text = selectedGrade.GradeID.ToString();
 
-                // Выбираем ученика в ComboBox
+
                 cmbStudent.SelectedValue = selectedGrade.StudentID;
 
-                // Выбираем предмет в ComboBox
+
                 cmbSubject.SelectedValue = selectedGrade.SubjectID;
 
-                // Выбираем оценку
+
                 foreach (ComboBoxItem item in cmbGrade.Items)
                 {
                     if (item.Content.ToString() == selectedGrade.GradeValue.ToString())
@@ -178,10 +173,10 @@ namespace УчётУспеваемостиООШ
                     }
                 }
 
-                // Устанавливаем дату
+ 
                 dpDate.SelectedDate = selectedGrade.GradeDate;
 
-                // Выбираем тип контроля
+        
                 foreach (ComboBoxItem item in cmbControlType.Items)
                 {
                     if (item.Content.ToString() == selectedGrade.ControlType)
@@ -209,7 +204,7 @@ namespace УчётУспеваемостиООШ
             }
             try
             {
-                // Проверка заполнения полей
+     
                 if (cmbStudent.SelectedValue == null)
                 {
                     MessageBox.Show("Выберите ученика!", "Предупреждение",
@@ -245,7 +240,7 @@ namespace УчётУспеваемостиООШ
                     return;
                 }
 
-                // Создание новой оценки
+
                 var newGrade = new Grade
                 {
                     StudentID = (int)cmbStudent.SelectedValue,
@@ -261,7 +256,6 @@ namespace УчётУспеваемостиООШ
                 MessageBox.Show("Оценка успешно добавлена!", "Успех",
                     MessageBoxButton.OK, MessageBoxImage.Information);
 
-                // Обновляем данные
                 LoadData();
                 btnClear_Click(sender, e);
             }
@@ -293,7 +287,6 @@ namespace УчётУспеваемостиООШ
                     return;
                 }
 
-                // Проверка заполнения полей
                 if (cmbStudent.SelectedValue == null)
                 {
                     MessageBox.Show("Выберите ученика!", "Предупреждение",
@@ -329,7 +322,7 @@ namespace УчётУспеваемостиООШ
                     return;
                 }
 
-                // Обновление данных
+ 
                 grade.StudentID = (int)cmbStudent.SelectedValue;
                 grade.SubjectID = (int)cmbSubject.SelectedValue;
                 grade.GradeValue = (byte)int.Parse(((ComboBoxItem)cmbGrade.SelectedItem).Content.ToString()!);
@@ -341,7 +334,7 @@ namespace УчётУспеваемостиООШ
                 MessageBox.Show("Оценка успешно обновлена!", "Успех",
                     MessageBoxButton.OK, MessageBoxImage.Information);
 
-                // Обновляем данные
+
                 LoadData();
                 btnClear_Click(sender, e);
             }
@@ -379,7 +372,7 @@ namespace УчётУспеваемостиООШ
                         MessageBox.Show("Оценка успешно удалена!", "Успех",
                             MessageBoxButton.OK, MessageBoxImage.Information);
 
-                        // Обновляем данные
+     
                         LoadData();
                         btnClear_Click(sender, e);
                     }
@@ -394,7 +387,7 @@ namespace УчётУспеваемостиООШ
 
         private void btnClear_Click(object sender, RoutedEventArgs e)
         {
-            // Очистка всех полей
+
             txtGradeID.Text = "";
             cmbStudent.SelectedIndex = -1;
             cmbSubject.SelectedIndex = -1;
@@ -402,7 +395,7 @@ namespace УчётУспеваемостиООШ
             dpDate.SelectedDate = DateTime.Today;
             cmbControlType.SelectedIndex = -1;
 
-            // Снимаем выделение в DataGrid
+
             dgGrades.SelectedItem = null;
         }
 
@@ -410,6 +403,89 @@ namespace УчётУспеваемостиООШ
         {
             base.OnClosed(e);
             _context?.Dispose();
+        }
+        private void btnCharts_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                var chartWindow = new ChartWindow();
+                chartWindow.Owner = this;
+                chartWindow.ShowDialog();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Ошибка при открытии окна графиков: {ex.Message}",
+                    "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        private string _selectedClassName = "9А"; 
+
+        private void LoadClasses()
+        {
+            try
+            {
+                var classes = _context.Classes
+                    .OrderBy(c => c.ClassName)
+                    .Select(c => c.ClassName)
+                    .ToList();
+
+                cmbClassForExport.ItemsSource = classes;
+
+
+                if (classes.Count > 0)
+                {
+                    cmbClassForExport.SelectedItem = _selectedClassName;
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Ошибка при загрузке классов: {ex.Message}", "Ошибка",
+                    MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        private void cmbClassForExport_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (cmbClassForExport.SelectedItem != null)
+            {
+                _selectedClassName = cmbClassForExport.SelectedItem.ToString()!;
+            }
+        }
+        private void btnExport_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(_selectedClassName))
+                {
+                    MessageBox.Show("Выберите класс для экспорта!", "Предупреждение",
+                        MessageBoxButton.OK, MessageBoxImage.Warning);
+                    return;
+                }
+
+               
+                var saveDialog = new SaveFileDialog
+                {
+                    Filter = "Excel Files|*.xlsx",
+                    DefaultExt = "xlsx",
+                    FileName = $"Ведомость_{_selectedClassName}_{DateTime.Now:yyyyMMdd_HHmmss}.xlsx"
+                };
+
+                if (saveDialog.ShowDialog() == true)
+                {
+
+                    var exportService = new ExportService(_context);
+                    exportService.ExportClassGrades(_selectedClassName, saveDialog.FileName);
+
+                    MessageBox.Show($"Ведомость класса {_selectedClassName} успешно сохранена в файл:\n{saveDialog.FileName}",
+                        "Экспорт завершен", MessageBoxButton.OK, MessageBoxImage.Information);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Ошибка при экспорте: {ex.Message}", "Ошибка экспорта",
+                    MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
     }
 }

@@ -21,7 +21,7 @@ namespace УчётУспеваемостиООШ.Models
         [Column(TypeName = "nchar(1)")]
         public string ClassLetter { get; set; } = string.Empty;
 
-        // Навигационные свойства
+
         public virtual ICollection<Student>? Students { get; set; }
     }
 }

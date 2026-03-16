@@ -33,7 +33,7 @@ namespace УчётУспеваемостиООШ.Models
         [MaxLength(200)]
         public string ParentAddress { get; set; } = string.Empty;
 
-        // Навигационные свойства
+
         [ForeignKey("ClassID")]
         public virtual Class? Class { get; set; }
 

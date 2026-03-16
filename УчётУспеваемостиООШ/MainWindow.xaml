@@ -15,7 +15,7 @@
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
-        <!-- Заголовок -->
+
         <TextBlock Grid.Row="0" 
                    Text="Вход в систему учёта успеваемости" 
                    FontSize="16" 
@@ -23,19 +23,19 @@
                    HorizontalAlignment="Center" 
                    Margin="0,0,0,20"/>
 
-        <!-- Логин -->
+
         <StackPanel Grid.Row="1" Margin="0,5">
             <TextBlock Text="Логин:" Margin="0,0,0,5"/>
             <TextBox x:Name="txtUsername" Height="30" Padding="5"/>
         </StackPanel>
 
-        <!-- Пароль -->
+
         <StackPanel Grid.Row="2" Margin="0,5">
             <TextBlock Text="Пароль:" Margin="0,0,0,5"/>
             <PasswordBox x:Name="txtPassword" Height="30" Padding="5"/>
         </StackPanel>
 
-        <!-- Кнопки -->
+
         <StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,20">
             <Button x:Name="btnLogin" 
                     Content="Войти" 
@@ -48,7 +48,6 @@
                     Click="btnCancel_Click"/>
         </StackPanel>
 
-        <!-- Сообщение об ошибке -->
         <TextBlock x:Name="txtErrorMessage" 
                    Grid.Row="4" 
                    Foreground="Red" 

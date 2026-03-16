@@ -15,18 +15,18 @@ namespace УчётУспеваемостиООШ.Data
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            // Строка подключения к SQL Server
+
             optionsBuilder.UseSqlServer(@"Server=DESKTOP-MQ9HMGB;Database=УчетУспеваемостиООШ;Trusted_Connection=True;TrustServerCertificate=True;");
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            // Настройка уникальности Username
+
             modelBuilder.Entity<User>()
                 .HasIndex(u => u.Username)
                 .IsUnique();
 
-            // Настройка для Grade (чтобы свойство GradeValue соответствовало колонке Grade в БД)
+
             modelBuilder.Entity<Grade>()
                 .Property(g => g.GradeValue)
                 .HasColumnName("Grade");

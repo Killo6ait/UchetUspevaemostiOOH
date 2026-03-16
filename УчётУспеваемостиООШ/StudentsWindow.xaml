@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:УчётУспеваемостиООШ"
         mc:Ignorable="d"
         Title="Управление учащимися" 
-        Height="850" Width="1206"
+        Height="1014" Width="1206"
         WindowStartupLocation="CenterScreen"
         Background="#f5f6fa">
 
@@ -71,6 +71,7 @@
     <Grid Margin="15">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
@@ -87,8 +88,10 @@
                        HorizontalAlignment="Center"/>
         </Border>
 
+       
+
         <!-- Основная область -->
-        <Grid Grid.Row="1">
+        <Grid Grid.Row="2">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="Auto"/>
@@ -189,6 +192,9 @@
                             <RowDefinition Height="Auto"/>
                             <RowDefinition Height="Auto"/>
                             <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
                         </Grid.RowDefinitions>
 
                         <!-- Заголовок формы -->
@@ -243,17 +249,17 @@
                         <!-- Адрес родителей -->
                         <TextBlock Grid.Row="13" Style="{StaticResource FormFieldStyle}" Text="Адрес родителей:"/>
                         <TextBox x:Name="txtParentAddress" 
-                                 Grid.Row="12" 
+                                 Grid.Row="14" 
                                  Style="{StaticResource TextBoxStyle}"
                                  TextWrapping="Wrap"
                                  AcceptsReturn="True"
-                                 Height="NaN" Margin="0,37,0,35"/>
+                                 Height="60"/>
 
                         <!-- Кнопки действий -->
-                        <WrapPanel Grid.Row="12" 
+                        <WrapPanel Grid.Row="15" 
                                    Orientation="Horizontal" 
                                    HorizontalAlignment="Center"
-                                   Margin="0,90,0,-70">
+                                   Margin="0,20,0,0">
                             <Button x:Name="btnAdd" 
                                     Content="➕ Добавить" 
                                     Style="{StaticResource ActionButtonStyle}"
@@ -274,6 +280,22 @@
                                     Style="{StaticResource ActionButtonStyle}"
                                     Background="#95a5a6"
                                     Click="btnClear_Click"/>
+                            <Button x:Name="btnSearch" 
+                             Content="🔍 Поиск учащихся" 
+                             Width="250" Height="45"
+                             Background="#3498db"
+                             Style="{StaticResource ActionButtonStyle}"
+                             FontWeight="Bold"
+                             Click="btnSearch_Click">
+                            </Button>
+                            <Button x:Name="btnResetFilter" 
+                             Content="🔄 Сбросить фильтр" 
+                             Width="250" Height="45"
+                             Background="#95a5a6"
+                             Style="{StaticResource ActionButtonStyle}"
+                             FontWeight="Bold"
+                             Click="btnResetFilter_Click">
+                            </Button>
                         </WrapPanel>
                     </Grid>
                 </Border>

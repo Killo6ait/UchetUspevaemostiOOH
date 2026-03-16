@@ -19,7 +19,7 @@ namespace УчётУспеваемостиООШ.Models
 
         [Required]
         [MaxLength(20)]
-        public string Status { get; set; } = string.Empty; // 'Присутствовал', 'Отсутствовал', 'Уважительная причина'
+        public string Status { get; set; } = string.Empty; 
 
         // Навигационное свойство
         [ForeignKey("StudentID")]
