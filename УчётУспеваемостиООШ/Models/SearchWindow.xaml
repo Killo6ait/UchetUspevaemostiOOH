@@ -1,7 +1,7 @@
 ﻿<Window x:Class="УчётУспеваемостиООШ.SearchWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Поиск учащихся" Height="319" Width="400"
+        Title="Поиск учащихся" Height="330" Width="400"
         WindowStartupLocation="CenterOwner" ResizeMode="NoResize">
 
     <Grid Margin="20">

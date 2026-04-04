@@ -11,24 +11,25 @@ using УчётУспеваемостиООШ.Services;
 
 namespace УчётУспеваемостиООШ
 {
-    public partial class GradesWindow : Window
+    public partial class GradesWindow : BaseWindow
     {
         private SchoolContext _context = new SchoolContext();
         private List<GradeViewModel> _grades = new List<GradeViewModel>();
-        private User _currentUser;
 
-        public GradesWindow(User user)
+        public GradesWindow(User user) : base(user) // ← вызываем конструктор BaseWindow
         {
+            if (user == null) throw new ArgumentNullException(nameof(user));
+
             InitializeComponent();
-            _currentUser = user;
+            ApplyCurrentSettings();
             LoadData();
             ApplyPermissions();
         }
+
         private void ApplyPermissions()
         {
             if (_currentUser.Role == "Учитель")
             {
-              
                 btnAdd.ToolTip = "Добавление оценки (только по вашим предметам)";
                 btnUpdate.ToolTip = "Редактирование оценки (только по вашим предметам)";
                 btnDelete.ToolTip = "Удаление оценки (только по вашим предметам)";
@@ -47,7 +48,6 @@ namespace УчётУспеваемостиООШ
             public DateTime GradeDate { get; set; }
             public string ControlType { get; set; } = string.Empty;
         }
-
 
         public class StudentViewModel
         {
@@ -81,7 +81,6 @@ namespace УчётУспеваемостиООШ
                     query = query.Where(g => teacherSubjects.Contains(g.SubjectID));
                 }
 
-  
                 _grades = query
                     .Select(g => new GradeViewModel
                     {
@@ -103,7 +102,6 @@ namespace УчётУспеваемостиООШ
                     .ToList();
 
                 dgGrades.ItemsSource = _grades;
-
 
                 var students = _context.Students
                     .Include(s => s.Class)
@@ -145,6 +143,7 @@ namespace УчётУспеваемостиООШ
             }
             catch (Exception ex)
             {
+                Logger.Error($"Error loading grades: {ex.Message}", ex, "DB");
                 MessageBox.Show($"Ошибка при загрузке данных: {ex.Message}", "Ошибка",
                     MessageBoxButton.OK, MessageBoxImage.Error);
             }
@@ -154,15 +153,9 @@ namespace УчётУспеваемостиООШ
         {
             if (dgGrades.SelectedItem is GradeViewModel selectedGrade)
             {
- 
                 txtGradeID.Text = selectedGrade.GradeID.ToString();
-
-
                 cmbStudent.SelectedValue = selectedGrade.StudentID;
-
-
                 cmbSubject.SelectedValue = selectedGrade.SubjectID;
-
 
                 foreach (ComboBoxItem item in cmbGrade.Items)
                 {
@@ -173,10 +166,8 @@ namespace УчётУспеваемостиООШ
                     }
                 }
 
- 
                 dpDate.SelectedDate = selectedGrade.GradeDate;
 
-        
                 foreach (ComboBoxItem item in cmbControlType.Items)
                 {
                     if (item.Content.ToString() == selectedGrade.ControlType)
@@ -188,13 +179,13 @@ namespace УчётУспеваемостиООШ
             }
         }
 
+        // CREATE - Добавление оценки
         private void btnAdd_Click(object sender, RoutedEventArgs e)
         {
             if (_currentUser.Role == "Учитель" && _currentUser.TeacherID != null)
             {
                 int subjectId = (int)cmbSubject.SelectedValue;
                 var subject = _context.Subjects.Find(subjectId);
-
                 if (subject == null || subject.TeacherID != _currentUser.TeacherID)
                 {
                     MessageBox.Show("Вы можете добавлять оценки только по своим предметам!",
@@ -202,56 +193,56 @@ namespace УчётУспеваемостиООШ
                     return;
                 }
             }
+
             try
             {
-     
                 if (cmbStudent.SelectedValue == null)
                 {
-                    MessageBox.Show("Выберите ученика!", "Предупреждение",
-                        MessageBoxButton.OK, MessageBoxImage.Warning);
+                    MessageBox.Show("Выберите ученика!", "Предупреждение", MessageBoxButton.OK, MessageBoxImage.Warning);
                     return;
                 }
-
                 if (cmbSubject.SelectedValue == null)
                 {
-                    MessageBox.Show("Выберите предмет!", "Предупреждение",
-                        MessageBoxButton.OK, MessageBoxImage.Warning);
+                    MessageBox.Show("Выберите предмет!", "Предупреждение", MessageBoxButton.OK, MessageBoxImage.Warning);
                     return;
                 }
-
                 if (cmbGrade.SelectedItem == null)
                 {
-                    MessageBox.Show("Выберите оценку!", "Предупреждение",
-                        MessageBoxButton.OK, MessageBoxImage.Warning);
+                    MessageBox.Show("Выберите оценку!", "Предупреждение", MessageBoxButton.OK, MessageBoxImage.Warning);
                     return;
                 }
-
                 if (dpDate.SelectedDate == null)
                 {
-                    MessageBox.Show("Выберите дату!", "Предупреждение",
-                        MessageBoxButton.OK, MessageBoxImage.Warning);
+                    MessageBox.Show("Выберите дату!", "Предупреждение", MessageBoxButton.OK, MessageBoxImage.Warning);
                     return;
                 }
-
                 if (cmbControlType.SelectedItem == null)
                 {
-                    MessageBox.Show("Выберите тип контроля!", "Предупреждение",
-                        MessageBoxButton.OK, MessageBoxImage.Warning);
+                    MessageBox.Show("Выберите тип контроля!", "Предупреждение", MessageBoxButton.OK, MessageBoxImage.Warning);
                     return;
                 }
 
+                int studentId = (int)cmbStudent.SelectedValue;
+                int subjectId = (int)cmbSubject.SelectedValue;
+                int gradeValue = int.Parse(((ComboBoxItem)cmbGrade.SelectedItem).Content.ToString()!);
+                string controlType = ((ComboBoxItem)cmbControlType.SelectedItem).Content.ToString()!;
 
                 var newGrade = new Grade
                 {
-                    StudentID = (int)cmbStudent.SelectedValue,
-                    SubjectID = (int)cmbSubject.SelectedValue,
-                    GradeValue = (byte)int.Parse(((ComboBoxItem)cmbGrade.SelectedItem).Content.ToString()!), // ! - подавляем предупреждение о null
+                    StudentID = studentId,
+                    SubjectID = subjectId,
+                    GradeValue = (byte)gradeValue,
                     Date = dpDate.SelectedDate.Value,
-                    ControlType = ((ComboBoxItem)cmbControlType.SelectedItem).Content.ToString()!
+                    ControlType = controlType
                 };
 
                 _context.Grades.Add(newGrade);
                 _context.SaveChanges();
+
+                // АУДИТ: ДОБАВЛЕНИЕ ЗАПИСИ
+                Logger.Audit(_currentUser.Username, "Added record to Grades",
+                    $"ID={newGrade.GradeID}");
+                Logger.Info($"Record added to Grades table", "DB");
 
                 MessageBox.Show("Оценка успешно добавлена!", "Успех",
                     MessageBoxButton.OK, MessageBoxImage.Information);
@@ -261,11 +252,13 @@ namespace УчётУспеваемостиООШ
             }
             catch (Exception ex)
             {
+                Logger.Error($"Error adding grade: {ex.Message}", ex, "DB");
                 MessageBox.Show($"Ошибка при добавлении: {ex.Message}", "Ошибка",
                     MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
+        // UPDATE - Редактирование оценки
         private void btnUpdate_Click(object sender, RoutedEventArgs e)
         {
             try
@@ -289,40 +282,30 @@ namespace УчётУспеваемостиООШ
 
                 if (cmbStudent.SelectedValue == null)
                 {
-                    MessageBox.Show("Выберите ученика!", "Предупреждение",
-                        MessageBoxButton.OK, MessageBoxImage.Warning);
+                    MessageBox.Show("Выберите ученика!", "Предупреждение", MessageBoxButton.OK, MessageBoxImage.Warning);
                     return;
                 }
-
                 if (cmbSubject.SelectedValue == null)
                 {
-                    MessageBox.Show("Выберите предмет!", "Предупреждение",
-                        MessageBoxButton.OK, MessageBoxImage.Warning);
+                    MessageBox.Show("Выберите предмет!", "Предупреждение", MessageBoxButton.OK, MessageBoxImage.Warning);
                     return;
                 }
-
                 if (cmbGrade.SelectedItem == null)
                 {
-                    MessageBox.Show("Выберите оценку!", "Предупреждение",
-                        MessageBoxButton.OK, MessageBoxImage.Warning);
+                    MessageBox.Show("Выберите оценку!", "Предупреждение", MessageBoxButton.OK, MessageBoxImage.Warning);
                     return;
                 }
-
                 if (dpDate.SelectedDate == null)
                 {
-                    MessageBox.Show("Выберите дату!", "Предупреждение",
-                        MessageBoxButton.OK, MessageBoxImage.Warning);
+                    MessageBox.Show("Выберите дату!", "Предупреждение", MessageBoxButton.OK, MessageBoxImage.Warning);
                     return;
                 }
-
                 if (cmbControlType.SelectedItem == null)
                 {
-                    MessageBox.Show("Выберите тип контроля!", "Предупреждение",
-                        MessageBoxButton.OK, MessageBoxImage.Warning);
+                    MessageBox.Show("Выберите тип контроля!", "Предупреждение", MessageBoxButton.OK, MessageBoxImage.Warning);
                     return;
                 }
 
- 
                 grade.StudentID = (int)cmbStudent.SelectedValue;
                 grade.SubjectID = (int)cmbSubject.SelectedValue;
                 grade.GradeValue = (byte)int.Parse(((ComboBoxItem)cmbGrade.SelectedItem).Content.ToString()!);
@@ -331,20 +314,26 @@ namespace УчётУспеваемостиООШ
 
                 _context.SaveChanges();
 
+                // АУДИТ: ИЗМЕНЕНИЕ ЗАПИСИ
+                Logger.Audit(_currentUser.Username, "Updated record in Grades",
+                    $"ID={gradeId}");
+                Logger.Info($"Record updated in Grades table", "DB");
+
                 MessageBox.Show("Оценка успешно обновлена!", "Успех",
                     MessageBoxButton.OK, MessageBoxImage.Information);
-
 
                 LoadData();
                 btnClear_Click(sender, e);
             }
             catch (Exception ex)
             {
+                Logger.Error($"Error updating grade ID={txtGradeID.Text}: {ex.Message}", ex, "DB");
                 MessageBox.Show($"Ошибка при обновлении: {ex.Message}", "Ошибка",
                     MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
+        // DELETE - Удаление оценки
         private void btnDelete_Click(object sender, RoutedEventArgs e)
         {
             try
@@ -369,10 +358,14 @@ namespace УчётУспеваемостиООШ
                         _context.Grades.Remove(grade);
                         _context.SaveChanges();
 
+                        // АУДИТ: УДАЛЕНИЕ ЗАПИСИ
+                        Logger.Audit(_currentUser.Username, "Deleted record from Grades",
+                            $"ID={gradeId}");
+                        Logger.Info($"Record deleted from Grades table", "DB");
+
                         MessageBox.Show("Оценка успешно удалена!", "Успех",
                             MessageBoxButton.OK, MessageBoxImage.Information);
 
-     
                         LoadData();
                         btnClear_Click(sender, e);
                     }
@@ -380,6 +373,7 @@ namespace УчётУспеваемостиООШ
             }
             catch (Exception ex)
             {
+                Logger.Error($"Error deleting grade ID={txtGradeID.Text}: {ex.Message}", ex, "DB");
                 MessageBox.Show($"Ошибка при удалении: {ex.Message}", "Ошибка",
                     MessageBoxButton.OK, MessageBoxImage.Error);
             }
@@ -387,15 +381,12 @@ namespace УчётУспеваемостиООШ
 
         private void btnClear_Click(object sender, RoutedEventArgs e)
         {
-
             txtGradeID.Text = "";
             cmbStudent.SelectedIndex = -1;
             cmbSubject.SelectedIndex = -1;
             cmbGrade.SelectedIndex = -1;
             dpDate.SelectedDate = DateTime.Today;
             cmbControlType.SelectedIndex = -1;
-
-
             dgGrades.SelectedItem = null;
         }
 
@@ -404,6 +395,7 @@ namespace УчётУспеваемостиООШ
             base.OnClosed(e);
             _context?.Dispose();
         }
+
         private void btnCharts_Click(object sender, RoutedEventArgs e)
         {
             try
@@ -414,12 +406,13 @@ namespace УчётУспеваемостиООШ
             }
             catch (Exception ex)
             {
+                Logger.Error($"Error opening chart window: {ex.Message}", ex, "UI");
                 MessageBox.Show($"Ошибка при открытии окна графиков: {ex.Message}",
                     "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
-        private string _selectedClassName = "9А"; 
+        private string _selectedClassName = "9А";
 
         private void LoadClasses()
         {
@@ -432,7 +425,6 @@ namespace УчётУспеваемостиООШ
 
                 cmbClassForExport.ItemsSource = classes;
 
-
                 if (classes.Count > 0)
                 {
                     cmbClassForExport.SelectedItem = _selectedClassName;
@@ -440,6 +432,7 @@ namespace УчётУспеваемостиООШ
             }
             catch (Exception ex)
             {
+                Logger.Error($"Error loading classes: {ex.Message}", ex, "DB");
                 MessageBox.Show($"Ошибка при загрузке классов: {ex.Message}", "Ошибка",
                     MessageBoxButton.OK, MessageBoxImage.Error);
             }
@@ -452,6 +445,7 @@ namespace УчётУспеваемостиООШ
                 _selectedClassName = cmbClassForExport.SelectedItem.ToString()!;
             }
         }
+
         private void btnExport_Click(object sender, RoutedEventArgs e)
         {
             try
@@ -463,7 +457,6 @@ namespace УчётУспеваемостиООШ
                     return;
                 }
 
-               
                 var saveDialog = new SaveFileDialog
                 {
                     Filter = "Excel Files|*.xlsx",
@@ -473,16 +466,17 @@ namespace УчётУспеваемостиООШ
 
                 if (saveDialog.ShowDialog() == true)
                 {
-
                     var exportService = new ExportService(_context);
                     exportService.ExportClassGrades(_selectedClassName, saveDialog.FileName);
 
+                    Logger.Info($"Export completed: Class={_selectedClassName}", "Export");
                     MessageBox.Show($"Ведомость класса {_selectedClassName} успешно сохранена в файл:\n{saveDialog.FileName}",
                         "Экспорт завершен", MessageBoxButton.OK, MessageBoxImage.Information);
                 }
             }
             catch (Exception ex)
             {
+                Logger.Error($"Error exporting grades: {ex.Message}", ex, "Export");
                 MessageBox.Show($"Ошибка при экспорте: {ex.Message}", "Ошибка экспорта",
                     MessageBoxButton.OK, MessageBoxImage.Error);
             }

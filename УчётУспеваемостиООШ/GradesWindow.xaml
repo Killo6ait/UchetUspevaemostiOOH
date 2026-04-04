@@ -1,17 +1,18 @@
-﻿<Window x:Class="УчётУспеваемостиООШ.GradesWindow"
-        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:УчётУспеваемостиООШ"
-        mc:Ignorable="d"
-        Title="Управление оценками" 
-        Height="1005" Width="1206"
-        WindowStartupLocation="CenterScreen"
-        Background="#f5f6fa">
+﻿<local:BaseWindow x:Class="УчётУспеваемостиООШ.GradesWindow"
+                  xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                  xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                  xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                  xmlns:local="clr-namespace:УчётУспеваемостиООШ"
+                  mc:Ignorable="d"
+                  Title="Управление оценками" 
+                  Width="1206"
+                  WindowStartupLocation="CenterScreen"
+                  WindowState="Maximized"
+                  Background="{DynamicResource WindowBackground}">
 
-    <Window.Resources>
-
+    <local:BaseWindow.Resources>
+        <!-- Эффект тени для кнопок -->
         <DropShadowEffect x:Key="ButtonShadow" 
                           Color="Black" 
                           Direction="315" 
@@ -19,7 +20,7 @@
                           Opacity="0.3" 
                           BlurRadius="10"/>
 
-
+        <!-- Стиль для кнопок действий -->
         <Style x:Key="ActionButtonStyle" TargetType="Button">
             <Setter Property="Width" Value="120"/>
             <Setter Property="Height" Value="40"/>
@@ -36,35 +37,28 @@
             </Style.Resources>
         </Style>
 
-
+        <!-- Стиль для текстовых полей (заголовки) -->
         <Style x:Key="FormFieldStyle" TargetType="TextBlock">
             <Setter Property="FontSize" Value="14"/>
             <Setter Property="FontWeight" Value="SemiBold"/>
-            <Setter Property="Foreground" Value="#34495e"/>
+            <Setter Property="Foreground" Value="{DynamicResource TextColor}"/>
             <Setter Property="Margin" Value="0,10,0,5"/>
         </Style>
 
-        <Style x:Key="ComboBoxStyle" TargetType="ComboBox">
-            <Setter Property="Height" Value="35"/>
-            <Setter Property="FontSize" Value="14"/>
-            <Setter Property="Margin" Value="0,0,0,10"/>
-        </Style>
-
-   
-        <Style x:Key="TextBoxStyle" TargetType="TextBox">
+        <!-- Стиль для ID поля (только для чтения) -->
+        <Style x:Key="IdTextBoxStyle" TargetType="TextBox">
             <Setter Property="Height" Value="35"/>
             <Setter Property="FontSize" Value="14"/>
             <Setter Property="Margin" Value="0,0,0,10"/>
             <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="Padding" Value="5,0"/>
+            <Setter Property="Background" Value="{DynamicResource DataGridHeaderColor}"/>
+            <Setter Property="Foreground" Value="{DynamicResource TextColor}"/>
+            <Setter Property="BorderBrush" Value="{DynamicResource BorderColor}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="IsReadOnly" Value="True"/>
         </Style>
-
-
-        <Style x:Key="DatePickerStyle" TargetType="DatePicker">
-            <Setter Property="Height" Value="35"/>
-            <Setter Property="FontSize" Value="14"/>
-            <Setter Property="Margin" Value="0,0,0,10"/>
-        </Style>
-    </Window.Resources>
+    </local:BaseWindow.Resources>
 
     <Grid Margin="15">
         <Grid.RowDefinitions>
@@ -73,7 +67,7 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-
+        <!-- Заголовок -->
         <Border Grid.Row="0" 
                 Background="#2c3e50" 
                 Padding="15" 
@@ -86,19 +80,23 @@
                        HorizontalAlignment="Center"/>
         </Border>
 
+        <!-- Панель инструментов -->
         <Border Grid.Row="1" 
-                Background="White" 
+                Background="{DynamicResource ControlBackground}" 
                 CornerRadius="10" 
                 Padding="15"
                 Margin="0,0,0,15"
-                Effect="{StaticResource ButtonShadow}">
+                Effect="{StaticResource ButtonShadow}"
+                BorderBrush="{DynamicResource BorderColor}"
+                BorderThickness="1">
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-    
+                <!-- Выбор класса -->
                 <StackPanel Orientation="Horizontal" Margin="0,0,20,0">
                     <TextBlock Text="Класс:" 
                                VerticalAlignment="Center" 
                                FontSize="14" 
                                FontWeight="SemiBold"
+                               Foreground="{DynamicResource TextColor}"
                                Margin="0,0,10,0"/>
                     <ComboBox x:Name="cmbClassForExport" 
                               Width="100" 
@@ -107,6 +105,7 @@
                               SelectionChanged="cmbClassForExport_SelectionChanged"/>
                 </StackPanel>
 
+                <!-- Кнопка графиков -->
                 <Button x:Name="btnCharts" 
                         Content="📊 Графики" 
                         Width="120" Height="35"
@@ -125,7 +124,7 @@
                     </Button.Resources>
                 </Button>
 
-  
+                <!-- Кнопка экспорта -->
                 <Button x:Name="btnExport" 
                         Content="📥 Экспорт" 
                         Width="120" Height="35"
@@ -146,7 +145,7 @@
             </StackPanel>
         </Border>
 
-
+        <!-- Основная область -->
         <Grid Grid.Row="2">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"/>
@@ -154,9 +153,9 @@
                 <ColumnDefinition Width="400"/>
             </Grid.ColumnDefinitions>
 
-
+            <!-- DataGrid с оценками -->
             <Border Grid.Column="0" 
-                    Background="White" 
+                    Background="{DynamicResource ControlBackground}" 
                     CornerRadius="10" 
                     Padding="10"
                     Margin="0,0,10,0"
@@ -169,37 +168,38 @@
                           RowHeight="35"
                           FontSize="13"
                           BorderThickness="0"
-                          Background="White"
+                          Background="{DynamicResource ControlBackground}"
+                          Foreground="{DynamicResource TextColor}"
                           RowHeaderWidth="0"
                           GridLinesVisibility="Horizontal"
-                          HorizontalGridLinesBrush="#ecf0f1"
+                          HorizontalGridLinesBrush="{DynamicResource BorderColor}"
                           SelectionChanged="dgGrades_SelectionChanged"
                           ScrollViewer.VerticalScrollBarVisibility="Auto"
                           ScrollViewer.HorizontalScrollBarVisibility="Auto">
 
                     <DataGrid.Columns>
-         
+                        <!-- ID (скрытая колонка) -->
                         <DataGridTextColumn Header="ID" 
                                             Binding="{Binding GradeID}" 
                                             Width="50"
                                             Visibility="Collapsed"/>
 
-     
+                        <!-- Ученик -->
                         <DataGridTextColumn Header="Ученик" 
                                             Binding="{Binding StudentFullName}" 
                                             Width="200"/>
 
-          
+                        <!-- Класс -->
                         <DataGridTextColumn Header="Класс" 
                                             Binding="{Binding ClassName}" 
                                             Width="80"/>
 
- 
+                        <!-- Предмет -->
                         <DataGridTextColumn Header="Предмет" 
                                             Binding="{Binding SubjectName}" 
                                             Width="150"/>
 
-
+                        <!-- Оценка -->
                         <DataGridTextColumn Header="Оценка" 
                                             Binding="{Binding GradeValue}" 
                                             Width="80">
@@ -208,38 +208,42 @@
                                     <Setter Property="FontWeight" Value="Bold"/>
                                     <Setter Property="HorizontalAlignment" Value="Center"/>
                                     <Setter Property="VerticalAlignment" Value="Center"/>
+                                    <Setter Property="Foreground" Value="{DynamicResource TextColor}"/>
                                 </Style>
                             </DataGridTextColumn.ElementStyle>
                         </DataGridTextColumn>
 
-   
+                        <!-- Дата -->
                         <DataGridTextColumn Header="Дата" 
                                             Binding="{Binding GradeDate, StringFormat='dd.MM.yyyy'}" 
                                             Width="100"/>
 
-   
+                        <!-- Тип работы -->
                         <DataGridTextColumn Header="Тип работы" 
                                             Binding="{Binding ControlType}" 
                                             Width="150"/>
                     </DataGrid.Columns>
                 </DataGrid>
             </Border>
-     
+
+            <!-- Разделитель -->
             <GridSplitter Grid.Column="1" 
                           Width="5" 
                           HorizontalAlignment="Center" 
                           VerticalAlignment="Stretch"
                           Background="Transparent"/>
 
-
+            <!-- Панель ввода данных -->
             <ScrollViewer Grid.Column="2" 
                           VerticalScrollBarVisibility="Auto" 
                           HorizontalScrollBarVisibility="Disabled">
-                <Border Background="White" 
+                <Border Background="{DynamicResource ControlBackground}" 
                         CornerRadius="10" 
                         Padding="20"
                         Margin="0,0,0,0"
-                        Effect="{StaticResource ButtonShadow}">
+                        Effect="{StaticResource ButtonShadow}"
+                        BorderBrush="{DynamicResource BorderColor}"
+                        BorderThickness="1">
                     <Grid>
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto"/>
@@ -260,61 +264,69 @@
                             <RowDefinition Height="Auto"/>
                         </Grid.RowDefinitions>
 
-    
+                        <!-- Заголовок формы -->
                         <TextBlock Grid.Row="0" 
                                    Text="Данные оценки" 
                                    FontSize="18" 
                                    FontWeight="Bold" 
-                                   Foreground="#2c3e50"
+                                   Foreground="{DynamicResource TextColor}"
                                    HorizontalAlignment="Center"
                                    Margin="0,0,0,15"/>
 
-
+                        <!-- ID (скрытое поле) -->
                         <TextBlock Grid.Row="1" Style="{StaticResource FormFieldStyle}" Text="ID:"/>
                         <TextBox x:Name="txtGradeID" 
                                  Grid.Row="2" 
-                                 Style="{StaticResource TextBoxStyle}"
-                                 IsReadOnly="True"
-                                 Background="#ecf0f1"/>
+                                 Style="{StaticResource IdTextBoxStyle}"/>
 
-           
+                        <!-- Ученик (ComboBox белый) -->
                         <TextBlock Grid.Row="3" Style="{StaticResource FormFieldStyle}" Text="Ученик:"/>
                         <ComboBox x:Name="cmbStudent" 
                                   Grid.Row="4" 
-                                  Style="{StaticResource ComboBoxStyle}"
+                                  Height="35" 
+                                  FontSize="14" 
+                                  Margin="0,0,0,10"
                                   DisplayMemberPath="FullName"
                                   SelectedValuePath="StudentID"/>
 
-      
+                        <!-- Предмет (ComboBox белый) -->
                         <TextBlock Grid.Row="5" Style="{StaticResource FormFieldStyle}" Text="Предмет:"/>
                         <ComboBox x:Name="cmbSubject" 
                                   Grid.Row="6" 
-                                  Style="{StaticResource ComboBoxStyle}"
+                                  Height="35" 
+                                  FontSize="14" 
+                                  Margin="0,0,0,10"
                                   DisplayMemberPath="SubjectName"
                                   SelectedValuePath="SubjectID"/>
 
-
+                        <!-- Оценка (ComboBox белый) -->
                         <TextBlock Grid.Row="7" Style="{StaticResource FormFieldStyle}" Text="Оценка:"/>
                         <ComboBox x:Name="cmbGrade" 
                                   Grid.Row="8" 
-                                  Style="{StaticResource ComboBoxStyle}">
+                                  Height="35" 
+                                  FontSize="14" 
+                                  Margin="0,0,0,10">
                             <ComboBoxItem Content="2"/>
                             <ComboBoxItem Content="3"/>
                             <ComboBoxItem Content="4"/>
                             <ComboBoxItem Content="5"/>
                         </ComboBox>
 
-
+                        <!-- Дата (DatePicker белый) -->
                         <TextBlock Grid.Row="9" Style="{StaticResource FormFieldStyle}" Text="Дата:"/>
                         <DatePicker x:Name="dpDate" 
                                     Grid.Row="10" 
-                                    Style="{StaticResource DatePickerStyle}"/>
+                                    Height="35" 
+                                    FontSize="14" 
+                                    Margin="0,0,0,10"/>
 
-
+                        <!-- Тип работы (ComboBox белый) -->
                         <TextBlock Grid.Row="11" Style="{StaticResource FormFieldStyle}" Text="Тип работы:"/>
                         <ComboBox x:Name="cmbControlType" 
                                   Grid.Row="12" 
-                                  Style="{StaticResource ComboBoxStyle}">
+                                  Height="35" 
+                                  FontSize="14" 
+                                  Margin="0,0,0,10">
                             <ComboBoxItem Content="Контрольная работа"/>
                             <ComboBoxItem Content="Самостоятельная работа"/>
                             <ComboBoxItem Content="Лабораторная работа"/>
@@ -324,7 +336,8 @@
                             <ComboBoxItem Content="Сочинение"/>
                             <ComboBoxItem Content="Изложение"/>
                         </ComboBox>
-                 
+
+                        <!-- Кнопки действий -->
                         <WrapPanel Grid.Row="13" 
                                    Orientation="Horizontal" 
                                    HorizontalAlignment="Center"
@@ -350,11 +363,9 @@
                                     Background="#95a5a6"
                                     Click="btnClear_Click"/>
                         </WrapPanel>
-
-                       
                     </Grid>
                 </Border>
             </ScrollViewer>
         </Grid>
     </Grid>
-</Window>
+</local:BaseWindow>

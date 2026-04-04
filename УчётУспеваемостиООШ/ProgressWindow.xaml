@@ -1,0 +1,29 @@
+﻿<Window x:Class="УчётУспеваемостиООШ.ProgressWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Выполняется операция" 
+        Height="144" Width="400"
+        WindowStartupLocation="CenterOwner"
+        ResizeMode="NoResize"
+        ShowInTaskbar="False">
+
+    <Grid Margin="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <TextBlock x:Name="txtStatus" 
+                   Text="Выполняется операция..." 
+                   HorizontalAlignment="Center"
+                   Margin="0,0,0,15"
+                   FontSize="14"/>
+
+        <ProgressBar x:Name="progressBar" 
+                     Grid.Row="1"
+                     Height="25"
+                     Minimum="0"
+                     Maximum="100"
+                     Value="0"/>
+    </Grid>
+</Window>

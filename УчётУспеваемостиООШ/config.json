@@ -1,0 +1,30 @@
+{
+  "Database": {
+    "Server": "DESKTOP-MQ9HMGB",
+    "DatabaseName": "УчетУспеваемостиООШ",
+    "IntegratedSecurity": true,
+    "UserId": "",
+    "Password": "",
+    "TrustServerCertificate": true
+  },
+  "AppSettings": {
+    "Theme": "Light",
+    "FontSizeScale": 100,
+    "FontFamily": "Arial",
+    "AutoBackup": {
+      "Enabled": true,
+      "IntervalDays": 7,
+      "BackupPath": "Backups",
+      "MaxBackupCount": 10
+    },
+    "Logging": {
+      "Enabled": true,
+      "LogPath": "Logs",
+      "LogLevel": "Info"
+    },
+    "Export": {
+      "DefaultPath": "Exports",
+      "FileNamePattern": "Ведомость_{className}_{date}.xlsx"
+    }
+  }
+}

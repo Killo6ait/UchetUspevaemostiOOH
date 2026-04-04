@@ -14,12 +14,16 @@ namespace УчётУспеваемостиООШ.Models
         public string Username { get; set; } = string.Empty;
 
         [Required]
+        [MaxLength(128)]
+        public string PasswordHash { get; set; } = string.Empty;
+
+        [Required]
         [MaxLength(50)]
-        public string Password { get; set; } = string.Empty;
+        public string Salt { get; set; } = string.Empty;
 
         [Required]
         [MaxLength(20)]
-        public string Role { get; set; } = string.Empty; 
+        public string Role { get; set; } = string.Empty;
 
         public int? TeacherID { get; set; }
     }

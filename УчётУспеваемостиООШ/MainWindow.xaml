@@ -2,7 +2,7 @@
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="Авторизация - Учёт успеваемости" 
-        Height="300" Width="400" 
+        Height="388" Width="400" 
         WindowStartupLocation="CenterScreen"
         ResizeMode="NoResize">
 
@@ -13,8 +13,8 @@
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
-
 
         <TextBlock Grid.Row="0" 
                    Text="Вход в систему учёта успеваемости" 
@@ -23,18 +23,15 @@
                    HorizontalAlignment="Center" 
                    Margin="0,0,0,20"/>
 
-
         <StackPanel Grid.Row="1" Margin="0,5">
             <TextBlock Text="Логин:" Margin="0,0,0,5"/>
             <TextBox x:Name="txtUsername" Height="30" Padding="5"/>
         </StackPanel>
 
-
         <StackPanel Grid.Row="2" Margin="0,5">
             <TextBlock Text="Пароль:" Margin="0,0,0,5"/>
             <PasswordBox x:Name="txtPassword" Height="30" Padding="5"/>
         </StackPanel>
-
 
         <StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,20">
             <Button x:Name="btnLogin" 
@@ -48,8 +45,16 @@
                     Click="btnCancel_Click"/>
         </StackPanel>
 
+        <!-- Новая строка для сообщения и ссылки -->
+        <StackPanel Grid.Row="4" HorizontalAlignment="Center" Margin="0,10,0,0">
+            <TextBlock Text="Нет аккаунта?" HorizontalAlignment="Center"/>
+            <TextBlock HorizontalAlignment="Center" Margin="0,5,0,0">
+                <Hyperlink Click="RegisterHyperlink_Click">Зарегистрироваться</Hyperlink>
+            </TextBlock>
+        </StackPanel>
+
         <TextBlock x:Name="txtErrorMessage" 
-                   Grid.Row="4" 
+                   Grid.Row="5" 
                    Foreground="Red" 
                    HorizontalAlignment="Center" 
                    TextWrapping="Wrap"

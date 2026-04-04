@@ -6,20 +6,32 @@ using System.Windows.Controls;
 using Microsoft.EntityFrameworkCore;
 using УчётУспеваемостиООШ.Data;
 using УчётУспеваемостиООШ.Models;
+using УчётУспеваемостиООШ.Services;
 
 namespace УчётУспеваемостиООШ
 {
-    public partial class AttendanceWindow : Window
+    public partial class AttendanceWindow : BaseWindow
     {
         private SchoolContext _context = new SchoolContext();
         private List<AttendanceViewModel> _attendances = new List<AttendanceViewModel>();
 
-        public AttendanceWindow()
+        // Правильно вызываем конструктор BaseWindow с передачей user
+        public AttendanceWindow(User user) : base(user)
         {
             InitializeComponent();
             LoadData();
+            ApplyPermissions();
         }
 
+        private void ApplyPermissions()
+        {
+            if (_currentUser?.Role == "Учитель")
+            {
+                btnAdd.ToolTip = "Добавление записи (только для вашего класса)";
+                btnUpdate.ToolTip = "Редактирование записи (только для вашего класса)";
+                btnDelete.ToolTip = "Удаление записи (только для вашего класса)";
+            }
+        }
 
         public class AttendanceViewModel
         {
@@ -30,7 +42,6 @@ namespace УчётУспеваемостиООШ
             public DateTime AttendanceDate { get; set; }
             public string Status { get; set; } = string.Empty;
         }
-
 
         public class StudentViewModel
         {
@@ -43,7 +54,6 @@ namespace УчётУспеваемостиООШ
         {
             try
             {
-
                 _attendances = _context.Attendances
                     .Include(a => a.Student)
                         .ThenInclude(s => s != null ? s.Class : null)
@@ -81,17 +91,14 @@ namespace УчётУспеваемостиООШ
                 cmbStudent.DisplayMemberPath = "FullName";
                 cmbStudent.SelectedValuePath = "StudentID";
 
-
                 dpDate.SelectedDate = DateTime.Today;
 
-
                 if (cmbStatus.Items.Count > 0)
-                {
-                    cmbStatus.SelectedIndex = 0; 
-                }
+                    cmbStatus.SelectedIndex = 0;
             }
             catch (Exception ex)
             {
+                Logger.Error($"Error loading attendance: {ex.Message}", ex, "DB");
                 MessageBox.Show($"Ошибка при загрузке данных: {ex.Message}", "Ошибка",
                     MessageBoxButton.OK, MessageBoxImage.Error);
             }
@@ -101,12 +108,8 @@ namespace УчётУспеваемостиООШ
         {
             if (dgAttendance.SelectedItem is AttendanceViewModel selectedAttendance)
             {
-          
                 txtAttendanceID.Text = selectedAttendance.AttendanceID.ToString();
-
                 cmbStudent.SelectedValue = selectedAttendance.StudentID;
-
-         
                 dpDate.SelectedDate = selectedAttendance.AttendanceDate;
 
                 foreach (ComboBoxItem item in cmbStatus.Items)
@@ -120,36 +123,33 @@ namespace УчётУспеваемостиООШ
             }
         }
 
+        // CREATE - Добавление записи посещаемости
         private void btnAdd_Click(object sender, RoutedEventArgs e)
         {
             try
             {
-      
                 if (cmbStudent.SelectedValue == null)
                 {
-                    MessageBox.Show("Выберите ученика!", "Предупреждение",
-                        MessageBoxButton.OK, MessageBoxImage.Warning);
+                    MessageBox.Show("Выберите ученика!", "Предупреждение", MessageBoxButton.OK, MessageBoxImage.Warning);
                     return;
                 }
-
                 if (dpDate.SelectedDate == null)
                 {
-                    MessageBox.Show("Выберите дату!", "Предупреждение",
-                        MessageBoxButton.OK, MessageBoxImage.Warning);
+                    MessageBox.Show("Выберите дату!", "Предупреждение", MessageBoxButton.OK, MessageBoxImage.Warning);
                     return;
                 }
-
                 if (cmbStatus.SelectedItem == null)
                 {
-                    MessageBox.Show("Выберите статус!", "Предупреждение",
-                        MessageBoxButton.OK, MessageBoxImage.Warning);
+                    MessageBox.Show("Выберите статус!", "Предупреждение", MessageBoxButton.OK, MessageBoxImage.Warning);
                     return;
                 }
 
-          
+                int studentId = (int)cmbStudent.SelectedValue;
+                DateTime date = dpDate.SelectedDate.Value;
+                string status = ((ComboBoxItem)cmbStatus.SelectedItem).Content.ToString()!;
+
                 var existingAttendance = _context.Attendances
-                    .FirstOrDefault(a => a.StudentID == (int)cmbStudent.SelectedValue &&
-                                         a.Date == dpDate.SelectedDate.Value);
+                    .FirstOrDefault(a => a.StudentID == studentId && a.Date == date);
 
                 if (existingAttendance != null)
                 {
@@ -158,31 +158,36 @@ namespace УчётУспеваемостиООШ
                     return;
                 }
 
-  
                 var newAttendance = new Attendance
                 {
-                    StudentID = (int)cmbStudent.SelectedValue,
-                    Date = dpDate.SelectedDate.Value,
-                    Status = ((ComboBoxItem)cmbStatus.SelectedItem).Content.ToString()!
+                    StudentID = studentId,
+                    Date = date,
+                    Status = status
                 };
 
                 _context.Attendances.Add(newAttendance);
                 _context.SaveChanges();
 
+                // АУДИТ: ДОБАВЛЕНИЕ ЗАПИСИ
+                Logger.Audit(_currentUser?.Username ?? "Unknown", "Added record to Attendance",
+                    $"ID={newAttendance.AttendanceID}");
+                Logger.Info($"Record added to Attendance table", "DB");
+
                 MessageBox.Show("Запись посещаемости успешно добавлена!", "Успех",
                     MessageBoxButton.OK, MessageBoxImage.Information);
-
 
                 LoadData();
                 btnClear_Click(sender, e);
             }
             catch (Exception ex)
             {
+                Logger.Error($"Error adding attendance: {ex.Message}", ex, "DB");
                 MessageBox.Show($"Ошибка при добавлении: {ex.Message}", "Ошибка",
                     MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
+        // UPDATE - Редактирование записи посещаемости
         private void btnUpdate_Click(object sender, RoutedEventArgs e)
         {
             try
@@ -204,33 +209,28 @@ namespace УчётУспеваемостиООШ
                     return;
                 }
 
-
                 if (cmbStudent.SelectedValue == null)
                 {
-                    MessageBox.Show("Выберите ученика!", "Предупреждение",
-                        MessageBoxButton.OK, MessageBoxImage.Warning);
+                    MessageBox.Show("Выберите ученика!", "Предупреждение", MessageBoxButton.OK, MessageBoxImage.Warning);
                     return;
                 }
-
                 if (dpDate.SelectedDate == null)
                 {
-                    MessageBox.Show("Выберите дату!", "Предупреждение",
-                        MessageBoxButton.OK, MessageBoxImage.Warning);
+                    MessageBox.Show("Выберите дату!", "Предупреждение", MessageBoxButton.OK, MessageBoxImage.Warning);
                     return;
                 }
-
                 if (cmbStatus.SelectedItem == null)
                 {
-                    MessageBox.Show("Выберите статус!", "Предупреждение",
-                        MessageBoxButton.OK, MessageBoxImage.Warning);
+                    MessageBox.Show("Выберите статус!", "Предупреждение", MessageBoxButton.OK, MessageBoxImage.Warning);
                     return;
                 }
 
-    
+                int newStudentId = (int)cmbStudent.SelectedValue;
+                DateTime newDate = dpDate.SelectedDate.Value;
+                string newStatus = ((ComboBoxItem)cmbStatus.SelectedItem).Content.ToString()!;
+
                 var existingAttendance = _context.Attendances
-                    .FirstOrDefault(a => a.StudentID == (int)cmbStudent.SelectedValue &&
-                                         a.Date == dpDate.SelectedDate.Value &&
-                                         a.AttendanceID != attendanceId);
+                    .FirstOrDefault(a => a.StudentID == newStudentId && a.Date == newDate && a.AttendanceID != attendanceId);
 
                 if (existingAttendance != null)
                 {
@@ -239,12 +239,16 @@ namespace УчётУспеваемостиООШ
                     return;
                 }
 
-
-                attendance.StudentID = (int)cmbStudent.SelectedValue;
-                attendance.Date = dpDate.SelectedDate.Value;
-                attendance.Status = ((ComboBoxItem)cmbStatus.SelectedItem).Content.ToString()!;
+                attendance.StudentID = newStudentId;
+                attendance.Date = newDate;
+                attendance.Status = newStatus;
 
                 _context.SaveChanges();
+
+                // АУДИТ: ИЗМЕНЕНИЕ ЗАПИСИ
+                Logger.Audit(_currentUser?.Username ?? "Unknown", "Updated record in Attendance",
+                    $"ID={attendanceId}");
+                Logger.Info($"Record updated in Attendance table", "DB");
 
                 MessageBox.Show("Запись посещаемости успешно обновлена!", "Успех",
                     MessageBoxButton.OK, MessageBoxImage.Information);
@@ -254,11 +258,13 @@ namespace УчётУспеваемостиООШ
             }
             catch (Exception ex)
             {
+                Logger.Error($"Error updating attendance ID={txtAttendanceID.Text}: {ex.Message}", ex, "DB");
                 MessageBox.Show($"Ошибка при обновлении: {ex.Message}", "Ошибка",
                     MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
+        // DELETE - Удаление записи посещаемости
         private void btnDelete_Click(object sender, RoutedEventArgs e)
         {
             try
@@ -283,10 +289,14 @@ namespace УчётУспеваемостиООШ
                         _context.Attendances.Remove(attendance);
                         _context.SaveChanges();
 
+                        // АУДИТ: УДАЛЕНИЕ ЗАПИСИ
+                        Logger.Audit(_currentUser?.Username ?? "Unknown", "Deleted record from Attendance",
+                            $"ID={attendanceId}");
+                        Logger.Info($"Record deleted from Attendance table", "DB");
+
                         MessageBox.Show("Запись посещаемости успешно удалена!", "Успех",
                             MessageBoxButton.OK, MessageBoxImage.Information);
 
-   
                         LoadData();
                         btnClear_Click(sender, e);
                     }
@@ -294,6 +304,7 @@ namespace УчётУспеваемостиООШ
             }
             catch (Exception ex)
             {
+                Logger.Error($"Error deleting attendance ID={txtAttendanceID.Text}: {ex.Message}", ex, "DB");
                 MessageBox.Show($"Ошибка при удалении: {ex.Message}", "Ошибка",
                     MessageBoxButton.OK, MessageBoxImage.Error);
             }
@@ -301,13 +312,10 @@ namespace УчётУспеваемостиООШ
 
         private void btnClear_Click(object sender, RoutedEventArgs e)
         {
-    
             txtAttendanceID.Text = "";
             cmbStudent.SelectedIndex = -1;
             dpDate.SelectedDate = DateTime.Today;
-            cmbStatus.SelectedIndex = 0; 
-
-   
+            cmbStatus.SelectedIndex = 0;
             dgAttendance.SelectedItem = null;
         }
 
